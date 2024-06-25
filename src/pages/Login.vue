@@ -34,17 +34,16 @@ export default {
     },
     methods: {
         async login() {
-            this.$router.push('/home');
-            // try {
-            //     this.loading = true;
-            //     const response = await loginService(this.body);
-            //     console.log('Login bem-sucedido:', response);
-            //     this.$router.push('/home');
-            // } catch (error) {
-            //     console.error('Erro no login:', error);
-            // } finally {
-            //     this.loading = false;
-            // }
+             try {
+                 this.loading = true;
+                 const response = await loginService(this.body);
+                 console.log('Login bem-sucedido:', response);
+                 this.$router.push('/home');
+             } catch (error) {
+                 console.error('Erro no login:', error);
+             } finally {
+                 this.loading = false;
+             }
         }
     },
 }

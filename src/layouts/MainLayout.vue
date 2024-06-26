@@ -12,7 +12,7 @@
         />
 
         <q-toolbar-title>
-          Quasar App
+          TCC - Guilherme Calesco
         </q-toolbar-title>
 
         <div>Quasar v{{ $q.version }}</div>

@@ -8,8 +8,15 @@
       </q-btn>
     </div>
     <div class="col-12 card-main">
-      <q-table title="Perguntas geradas" @row-click="viewQuestions" :filter="filter" :data="tableValue"
-        :columns="columns" row-key="name">
+      <q-table 
+        title="Perguntas geradas" 
+        @row-click="viewQuestions" 
+        :filter="filter" 
+        :data="tableValue"
+        :columns="columns" 
+        row-key="id" 
+        :rows-per-page-options="[0]"
+        :pagination="{ rowsPerPage: 0 }">
         <template v-slot:top-right>
           <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
             <template v-slot:append>
@@ -23,14 +30,17 @@
       <DialogsGenerate @addquestion="handleAddQuestion" />
     </q-dialog>
     <q-dialog v-model="openView">
-      <DialogsViewQuestion :questions="tableValue" />
+      <DialogsViewQuestion :question="selectedQuestion" />
     </q-dialog>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
 import DialogsGenerate from "components/DialogsGenerate.vue";
 import DialogsViewQuestion from "components/DialogsViewQuestion.vue";
+
+const API_URL = 'http://localhost:8080';
 
 export default {
   name: 'Home',
@@ -46,7 +56,7 @@ export default {
       columns: [
         { label: 'Questões', field: 'question', align: 'left', sortable: true },
         { label: 'Tipo', field: 'type', align: 'left', sortable: true },
-        { label: 'Materia', field: 'materia', align: 'left', sortable: true },
+        { label: 'Matéria', field: 'materia', align: 'left', sortable: true },
         { label: 'Curso', field: 'curso', align: 'left', sortable: true },
         { label: 'Ano', align: 'center', field: 'year', sortable: true },
       ],
@@ -58,40 +68,31 @@ export default {
         year: "",
         topic: "",
       },
-      question: [{
-
-      }],
+      selectedQuestion: null, // Inicializa como null
       tableValue: []
     }
   },
-  created() {
-    this.tableValue.push({
-      question: "AAAAAA",
-      type: "AAAAAA",
-      tags: ["AAAAAA", "AAAAAA", "AAAAAA",],
-      materia: "AAAAAA",
-      curso: "AAAAAA",
-      year: "AAAAAA"
-    })
+  async created() {
+    await this.fetchQuestions();
   },
   methods: {
     viewQuestions(row) {
-      this.newQuestion = row;
+      this.selectedQuestion = { ...row }; // Assegure-se de que seja um objeto correto
       this.openView = true;
     },
     openDialog() {
       this.open = true;
     },
-
-    handleAddQuestion(newQuestion) {
-      // this.tableValue.push({
-      //   materia: newQuestion.materia,
-      //   curso: newQuestion.curso,
-      //   year: newQuestion.year,
-      //   topic: newQuestion.topic,
-      //   questionDissert: newQuestion.questionDissert,
-      //   questionObjet: newQuestion.questionObjet,
-      // });
+    async fetchQuestions() {
+      try {
+        const response = await axios.get(`${API_URL}/questions`);
+        this.tableValue = response.data;
+      } catch (error) {
+        console.error('Erro ao buscar as perguntas:', error);
+      }
+    },
+    async handleAddQuestion(newQuestions) {
+      this.tableValue.push(...newQuestions);
       this.open = false;
     }
   }

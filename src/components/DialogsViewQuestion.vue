@@ -44,6 +44,7 @@
             </ul>
           </div>
         </div>
+        <q-btn color="primary" @click="closeDialog">Fechar</q-btn>
       </q-card-section>
     </q-card>
   </div>
@@ -51,6 +52,6 @@
 
 <script>
 export default {
-  props: ['selectedItem']
+  props: ['selectedItem', 'closeDialog']
 }
 </script>

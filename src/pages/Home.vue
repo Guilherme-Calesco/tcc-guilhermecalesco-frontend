@@ -1,21 +1,23 @@
 <template>
-  <div class="row q-pa-md">
-    <div class="q-pa-md" style="text-align: center; font-size: 20px; font-weight: bold;">TCC GUILHERME CALESCO</div>
-    <div class="col-12" style="display: flex; justify-content: space-between;">
-      <div></div>
+  <div class="q-pa-md q-gutter-md">
+    <div class="text-center text-h5 q-mb-lg">
+      Gerador Automático de Questões para Provas
+    </div>
+    <div class="row justify-end q-mb-md">
       <q-btn outline color="primary" @click="openDialog">
-        Gerar novas pergunta
+        Gerar Nova Pergunta
       </q-btn>
     </div>
     <div class="col-12 card-main">
       <q-table
-        title="Perguntas geradas"
-        row-key="id" 
+        title="Perguntas Geradas"
+        row-key="id"
         :filter="filter"
         :rows-per-page-options="[0]"
         :pagination="{ rowsPerPage: 0 }"
         :data="tableValue"
         :columns="columns"
+        class="shadow-1 rounded-borders"
       >
         <template v-slot:top-right>
           <q-input borderless dense debounce="300" v-model="filter" placeholder="Buscar">
@@ -25,7 +27,7 @@
           </q-input>
         </template>
         <template v-slot:body="props">
-          <q-tr @click="viewQuestions(props.row)">
+          <q-tr @click="viewQuestions(props.row)" class="cursor-pointer">
             <q-td v-for="col in props.cols" :key="col.name" :props="props">
               {{ props.row[col.field] }}
             </q-td>
@@ -33,11 +35,11 @@
         </template>
       </q-table>
     </div>
-    <q-dialog v-model="open">
+    <q-dialog v-model="open" persistent>
       <DialogsGenerate @addquestion="handleAddQuestion" />
     </q-dialog>
-    <q-dialog v-model="openView">
-      <DialogsViewQuestion :selectedItem="selectedItem" />
+    <q-dialog v-model="openView" persistent>
+      <DialogsViewQuestion :selectedItem="selectedItem" :closeDialog="closeViewDialog" />
     </q-dialog>
   </div>
 </template>
@@ -75,7 +77,7 @@ export default {
         year: "",
         topic: "",
       },
-      selectedItem: null, // Inicializa como null
+      selectedItem: null,
       tableValue: []
     }
   },
@@ -89,6 +91,9 @@ export default {
     },
     openDialog() {
       this.open = true;
+    },
+    closeViewDialog() {
+      this.openView = false;
     },
     async fetchQuestions() {
       try {
@@ -111,5 +116,8 @@ export default {
   background-color: #fff;
   border-radius: 15px;
   margin: 30px 0;
+}
+.cursor-pointer {
+  cursor: pointer;
 }
 </style>

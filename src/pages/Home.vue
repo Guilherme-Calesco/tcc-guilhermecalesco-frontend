@@ -8,21 +8,28 @@
       </q-btn>
     </div>
     <div class="col-12 card-main">
-      <q-table 
-        title="Perguntas geradas" 
-        @row-click="viewQuestions" 
-        :filter="filter" 
-        :data="tableValue"
-        :columns="columns" 
+      <q-table
+        title="Perguntas geradas"
         row-key="id" 
+        :filter="filter"
         :rows-per-page-options="[0]"
-        :pagination="{ rowsPerPage: 0 }">
+        :pagination="{ rowsPerPage: 0 }"
+        :data="tableValue"
+        :columns="columns"
+      >
         <template v-slot:top-right>
-          <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
+          <q-input borderless dense debounce="300" v-model="filter" placeholder="Buscar">
             <template v-slot:append>
               <q-icon name="search" />
             </template>
           </q-input>
+        </template>
+        <template v-slot:body="props">
+          <q-tr @click="viewQuestions(props.row)">
+            <q-td v-for="col in props.cols" :key="col.name" :props="props">
+              {{ props.row[col.field] }}
+            </q-td>
+          </q-tr>
         </template>
       </q-table>
     </div>
@@ -30,7 +37,7 @@
       <DialogsGenerate @addquestion="handleAddQuestion" />
     </q-dialog>
     <q-dialog v-model="openView">
-      <DialogsViewQuestion :question="selectedQuestion" />
+      <DialogsViewQuestion :selectedItem="selectedItem" />
     </q-dialog>
   </div>
 </template>
@@ -54,11 +61,11 @@ export default {
       openView: false,
       open: false,
       columns: [
-        { label: 'Questões', field: 'question', align: 'left', sortable: true },
-        { label: 'Tipo', field: 'type', align: 'left', sortable: true },
-        { label: 'Matéria', field: 'materia', align: 'left', sortable: true },
-        { label: 'Curso', field: 'curso', align: 'left', sortable: true },
-        { label: 'Ano', align: 'center', field: 'year', sortable: true },
+        { label: 'Questões', field: 'question', name: 'question', align: 'left', sortable: true },
+        { label: 'Tipo', field: 'type', name: 'type', align: 'left', sortable: true },
+        { label: 'Matéria', field: 'materia', name: 'materia', align: 'left', sortable: true },
+        { label: 'Curso', field: 'curso', name: 'curso', align: 'left', sortable: true },
+        { label: 'Ano', name: 'year', align: 'center', field: 'year', sortable: true },
       ],
       newQuestion: {
         questionDissert: 0,
@@ -68,7 +75,7 @@ export default {
         year: "",
         topic: "",
       },
-      selectedQuestion: null, // Inicializa como null
+      selectedItem: null, // Inicializa como null
       tableValue: []
     }
   },
@@ -77,7 +84,7 @@ export default {
   },
   methods: {
     viewQuestions(row) {
-      this.selectedQuestion = { ...row }; // Assegure-se de que seja um objeto correto
+      this.selectedItem = row;
       this.openView = true;
     },
     openDialog() {
